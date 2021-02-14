@@ -1,0 +1,23 @@
+{
+  "name": "react-apollo-testing-mock-gen",
+  "version": "1.0.0",
+  "description": "Mock generator for testing with MockedProvider.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "mgen": "node index.js"
+  },
+  "keywords": [
+    "testing",
+    "react",
+    "mockedprovider",
+    "mock",
+    "generator",
+    "graphql"
+  ],
+  "author": "csabat",
+  "license": "ISC",
+  "dependencies": {
+    "graphql": "^15.5.0"
+  }
+}
