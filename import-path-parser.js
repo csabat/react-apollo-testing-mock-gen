@@ -1,6 +1,6 @@
-const filePath = require('path');
+const path = require('path');
 
-const configPath = filePath.join(process.cwd(), 'mockGenerator.config.js');
+const configPath = path.join(process.cwd(), 'mockGenerator.config.js');
 
 // eslint-disable-next-line import/no-dynamic-require
 const config = require(configPath);
@@ -17,18 +17,18 @@ function getImportPaths(fileContent, dirname, parseFilePath) {
       return reducedPath.split(stringNotation)[1];
     });
 
-    const paths = importPaths.filter((importPath) => !!importPath);
+    const filePaths = importPaths.filter((importPath) => !!importPath);
 
     if (config['aliasPaths']) {
       const aliasPathsNames = Object.keys(config['aliasPaths']);
 
-      return paths.map((path) => {
-        const alias = aliasPathsNames.find((aliasName) => path.search(aliasName) !== -1);
+      return filePaths.map((filePath) => {
+        const alias = aliasPathsNames.find((aliasName) => filePath.search(aliasName) !== -1);
         const { rootPath, folder } = alias
-          ? { rootPath: dirname, folder: path.replace(alias, config['aliasPaths'][alias]) }
-          : { rootPath: parseFilePath, folder: path };
+          ? { rootPath: dirname, folder: filePath.replace(alias, config['aliasPaths'][alias]) }
+          : { rootPath: parseFilePath, folder: filePath };
 
-        return filePath.join(rootPath, folder);
+        return path.join(rootPath, folder);
       });
     }
 
@@ -38,6 +38,24 @@ function getImportPaths(fileContent, dirname, parseFilePath) {
   return [];
 }
 
+const processPathName = process.cwd();
+
+const filePathName = path.join(processPathName, process.argv[2]);
+const filePathArray = filePathName.split('/');
+console.log(filePathName)
+console.log(filePathArray)
+const fileFolderPath = filePathArray.slice(0, filePathArray.length - 1).join('/');
+console.log(filePathArray.slice(0, filePathArray.length - 1))
+const fileName = filePathArray[filePathArray.length - 1];
+console.log(fileName)
+const mockFilePath = `${fileFolderPath}/mocks/${fileName.replace('.gql', `.mock${config.fileExtension}`)}`;
+
 module.exports = {
-  getImportPaths
+  getImportPaths,
+  configPath,
+  filePathName,
+  fileFolderPath,
+  processPathName,
+  fileName,
+  mockFilePath
 };

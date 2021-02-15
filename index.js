@@ -2,61 +2,58 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 const { Source, parse } = require('graphql');
-const { getImportPaths } = require('./import-path-parser');
+const { getImportPaths, configPath, filePathName, fileFolderPath, processPathName, fileName, mockFilePath } = require('./import-path-parser');
 const { getSelectionSet, getFragmentDefinitions, resolveFragmentPath } = require('./operation-parser');
 
 const { getOperationsWithReturnTypes, schemaJsonPath } = require('./type-resolver');
 
-const configPath = path.join(process.cwd(), 'mockGenerator.config.js');
-
-// eslint-disable-next-line import/no-dynamic-require
 const config = require(configPath);
 
-const processPathName = process.cwd();
-const filePathName = path.join(processPathName, process.argv[2]).split('/');
-const filePathFolder = filePathName.slice(0, filePathName.length - 1).join('/');
-
-fs.readFile(`${path.join(processPathName, process.argv[2])}`, async (error, data) => {
+fs.readFile(filePathName, async (error, data) => {
   const source = new Source(data.toString());
+  console.log(JSON.stringify(parse(source, { noLocation: true }), null, 4));
   const sourceJson = parse(source, { noLocation: true });
-  const fragmentPaths = getImportPaths(data.toString(), processPathName, filePathFolder);
+  const fragmentPaths = getImportPaths(data.toString(), processPathName, fileFolderPath);
   const fragments = { ...getFragmentDefinitions(sourceJson.definitions), ...resolveFragmentPath(fragmentPaths) };
   const requestObject = sourceJson.definitions.find((def) => def.kind === 'OperationDefinition');
 
-  const rootPath = filePathName.slice(0, filePathName.length - 1).join('/');
-  const queryFileName = filePathName[filePathName.length - 1];
   const returnData = getSelectionSet(requestObject.selectionSet, fragments);
+  const operationName = requestObject.operation === 'query' ? 'Query' : 'Mutation';
 
-  const returnWithTypeNames = getOperationsWithReturnTypes('Query', returnData);
-  const template = mockTemplate(`mock${queryFileName.replace('.gql', '')}`, {}, returnWithTypeNames, queryFileName);
-
+  const returnWithTypeNames = getOperationsWithReturnTypes(operationName, returnData);
+  const template = mockTemplate(`mock${fileName.replace('.gql', '')}`, {}, returnWithTypeNames, fileName);
   // console.log(JSON.stringify(getSelectionSet(requestObject.selectionSet, fragments), null, 2));
-  if (!fs.existsSync(`${rootPath}/mocks`)) {
-    fs.mkdirSync(`${rootPath}/mocks`);
+  if (!fs.existsSync(`${fileFolderPath}/mocks`)) {
+    fs.mkdirSync(`${fileFolderPath}/mocks`);
   }
 
-  const mockFilePath = `${rootPath}/mocks/${queryFileName.replace('.gql', `.mock${config.fileExtension}`)}`;
+  fs.writeFile(mockFilePath, template, (error) => {
+    if (error) {
+      console.log(err)
+    }
 
-  fs.writeFile(mockFilePath, template, () => {});
-  // console.log(JSON.stringify(parse(source, { noLocation: true }), null, 4));
+    console.log('File created successfully. 🎉')
+  });
 
   fs.unlink(schemaJsonPath, (err) => {
     if (err) {
       console.error(err);
     }
+
+    console.log('Cleaning up. 🧹')
   });
 
-  exec(config.lint(mockFilePath), (err, stdout, stderr) => {
-    if (err) {
-      console.log(err);
+  if (config.lint) {
+    exec(config.lint(mockFilePath), (err, stdout, stderr) => {
+      if (err) {
+        console.log(err);
+  
+        return;
+      }
 
-      return;
-    }
-
-    // the *entire* stdout and stderr (buffered)
-    console.log(stdout);
-    console.log(stderr);
-  });
+      console.log('File has been formatted successfully. 💅');
+    });
+  }
 });
 
 const mockTemplate = (name, variables, result, queryFileName) => `
