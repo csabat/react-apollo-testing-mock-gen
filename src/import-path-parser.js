@@ -1,9 +1,7 @@
 const path = require('path');
+const config = require('./config');
 
-const configPath = path.join(process.cwd(), 'mockGenerator.config.js');
-
-// eslint-disable-next-line import/no-dynamic-require
-const config = require(configPath);
+const aliasPaths = config.aliasPaths;
 
 function getImportPaths(fileContent, dirname, parseFilePath) {
   if (fileContent.search('#import') !== -1) {
@@ -19,13 +17,13 @@ function getImportPaths(fileContent, dirname, parseFilePath) {
 
     const filePaths = importPaths.filter((importPath) => !!importPath);
 
-    if (config['aliasPaths']) {
-      const aliasPathsNames = Object.keys(config['aliasPaths']);
+    if (aliasPaths) {
+      const aliasPathsNames = Object.keys(aliasPaths);
 
       return filePaths.map((filePath) => {
         const alias = aliasPathsNames.find((aliasName) => filePath.search(aliasName) !== -1);
         const { rootPath, folder } = alias
-          ? { rootPath: dirname, folder: filePath.replace(alias, config['aliasPaths'][alias]) }
+          ? { rootPath: dirname, folder: filePath.replace(alias, aliasPaths[alias]) }
           : { rootPath: parseFilePath, folder: filePath };
 
         return path.join(rootPath, folder);
@@ -39,23 +37,19 @@ function getImportPaths(fileContent, dirname, parseFilePath) {
 }
 
 const processPathName = process.cwd();
-
 const filePathName = path.join(processPathName, process.argv[2]);
 const filePathArray = filePathName.split('/');
-console.log(filePathName)
-console.log(filePathArray)
 const fileFolderPath = filePathArray.slice(0, filePathArray.length - 1).join('/');
-console.log(filePathArray.slice(0, filePathArray.length - 1))
 const fileName = filePathArray[filePathArray.length - 1];
-console.log(fileName)
 const mockFilePath = `${fileFolderPath}/mocks/${fileName.replace('.gql', `.mock${config.fileExtension}`)}`;
+const schemaPath = path.join(processPathName, config.schemaPath);
 
 module.exports = {
   getImportPaths,
-  configPath,
   filePathName,
   fileFolderPath,
   processPathName,
   fileName,
-  mockFilePath
+  mockFilePath,
+  schemaPath
 };

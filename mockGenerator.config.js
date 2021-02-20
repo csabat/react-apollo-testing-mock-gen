@@ -3,7 +3,8 @@ module.exports = {
   aliasPaths: {
     '@zen': './frontend'
   },
-  lint: (path) => `yarn eslint ${path} --fix`,
+  // lint your mock file by prividing funtion ex.  (path) => `yarn eslint ${path} --fix`,
+  lint: null,
   fileExtension: '.ts',
   includeTypenames: true,
   resolvers: {
