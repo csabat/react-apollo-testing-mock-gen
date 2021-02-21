@@ -3,22 +3,23 @@ const fs = require('fs');
 const config = require('./config');
 
 const { exec } = require('child_process');
-const { mockTemplate } = require('./template');
-const { getFileSource } = require('./gql-file-parser');
+const { mockTemplate } = require('./templates/mock-template');
+const { getFileSource } = require('./file-parser');
 const { capitalize } = require('./utils');
-const { buildFragmentStuctures } = require('./fragment-parser');
-const { filePathName, fileFolderPath, fileName, mockFilePath } = require('./import-path-parser');
-const { buildSelectionStructure } = require('./query-builder');
-const { getVariables, getOperationDefinition } = require('./operation-parser');
+const buildFragmentStuctures = require('./fragment-parser');
+const { filePathName, fileFolderPath, fileName, mockFilePath } = require('./path-parser');
+const { buildSelectionStructure, getVariables } = require('./query-parser');
 const { resolveSelectionValues } = require('./type-resolver');
+
+const getOperationDefinition = (sourceJson) => {
+  return sourceJson.definitions.find((def) => def.kind === 'OperationDefinition');
+}
 
 const generateMock = () => {
   const { sourceJson, content } = getFileSource(filePathName);
   const fragments = buildFragmentStuctures(content, sourceJson);
   const operationDefinition = getOperationDefinition(sourceJson);
-
   const variables = getVariables(operationDefinition.variableDefinitions);
-
   const requestObjectStructure = buildSelectionStructure(operationDefinition.selectionSet, fragments);
   const operationName = capitalize(operationDefinition.operation)
   const mockResponse = resolveSelectionValues(operationName, requestObjectStructure);
@@ -55,6 +56,4 @@ const generateMock = () => {
   }
 }
 
-module.exports = {
-  generateMock
-}
+module.exports = generateMock

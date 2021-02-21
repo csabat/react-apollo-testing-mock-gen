@@ -1,5 +1,5 @@
 
-const { resolveTypename } = require('./type-resolver');
+const { resolveTypename } = require('../type-resolver');
 
 const buildSelectionStructure = (obj, fragments = {}) => {
   let node = {};
@@ -24,6 +24,17 @@ const buildSelectionStructure = (obj, fragments = {}) => {
   return node;
 };
 
+const getVariables = (variableDefinitions) => {
+  const variables = {};
+
+  variableDefinitions.forEach((variableDefinition) => {
+    variables[variableDefinition.variable.name.value] = ''
+  });
+
+  return variables;
+}
+
 module.exports = {
-  buildSelectionStructure
+  buildSelectionStructure,
+  getVariables
 }

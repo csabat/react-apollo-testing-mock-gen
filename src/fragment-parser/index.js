@@ -1,7 +1,7 @@
-const { getImportPaths, fileFolderPath, processPathName } = require('./import-path-parser');
-const { getFileSource } = require('./gql-file-parser');
-const { buildSelectionStructure } = require('./query-builder');
-const { resolveTypename } = require('./type-resolver');
+const { getImportPaths, fileFolderPath, processPathName } = require('../path-parser');
+const { getFileSource } = require('../file-parser');
+const { buildSelectionStructure } = require('../query-parser');
+const { resolveTypename } = require('../type-resolver');
 
 const getFragmentDefinitions = (definitions) => {
   const fragmentDefinitions = definitions.filter((definition) => definition.kind === 'FragmentDefinition');
@@ -38,6 +38,4 @@ const buildFragmentStuctures = (data, sourceJson) => {
   return { ...getFragmentDefinitions(sourceJson.definitions), ...getImportedFragments(fragmentPaths) };
 }
 
-module.exports = {
-  buildFragmentStuctures
-}
+module.exports = buildFragmentStuctures;

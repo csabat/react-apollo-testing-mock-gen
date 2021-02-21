@@ -1,4 +1,4 @@
-const config = require('./config');
+const config = require('../config');
 
 const isListTypeDefiniton = (type, isList = false) => {
   let isListType = isList;
@@ -17,8 +17,8 @@ const isListTypeDefiniton = (type, isList = false) => {
 };
 
 const isScalarTypeDefinition = (typename) => Object.keys(config.resolvers.ScalarTypeDefinition).includes(typename);
+
 const isPrimitiveTypeDefinition = (typename) => Object.keys(config.resolvers).includes(typename);
-const isEnumTypeDefinition = (typename) => typename === 'EnumTypeDefinition';
 
 const isTypedDefinition = (definition, operationType) => {
   return (definition.kind === 'ObjectTypeDefinition' || definition.kind === 'InterfaceTypeDefinition') &&
@@ -29,6 +29,5 @@ module.exports = {
   isListTypeDefiniton,
   isScalarTypeDefinition,
   isPrimitiveTypeDefinition,
-  isEnumTypeDefinition,
   isTypedDefinition
 }

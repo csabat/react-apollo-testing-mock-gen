@@ -1,5 +1,5 @@
 const path = require('path');
-const config = require('./config');
+const config = require('../config');
 
 const aliasPaths = config.aliasPaths;
 
@@ -17,20 +17,16 @@ function getImportPaths(fileContent, dirname, parseFilePath) {
 
     const filePaths = importPaths.filter((importPath) => !!importPath);
 
-    if (aliasPaths) {
-      const aliasPathsNames = Object.keys(aliasPaths);
+    const aliasPathsNames = aliasPaths ? Object.keys(aliasPaths) : [];
 
-      return filePaths.map((filePath) => {
-        const alias = aliasPathsNames.find((aliasName) => filePath.search(aliasName) !== -1);
-        const { rootPath, folder } = alias
-          ? { rootPath: dirname, folder: filePath.replace(alias, aliasPaths[alias]) }
-          : { rootPath: parseFilePath, folder: filePath };
+    return filePaths.map((filePath) => {
+      const alias = aliasPathsNames.find((aliasName) => filePath.search(aliasName) !== -1);
+      const { rootPath, folder } = alias
+        ? { rootPath: dirname, folder: filePath.replace(alias, aliasPaths[alias]) }
+        : { rootPath: parseFilePath, folder: filePath };
 
-        return path.join(rootPath, folder);
-      });
-    }
-
-    return paths;
+      return path.join(rootPath, folder);
+    });
   }
 
   return [];

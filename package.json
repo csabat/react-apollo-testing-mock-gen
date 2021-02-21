@@ -1,23 +1,34 @@
 {
   "name": "react-apollo-testing-mock-gen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Mock generator for testing with MockedProvider.",
-  "main": "index.js",
+  "main": "./index.js",
+  "bin": {
+    "mock-gen": "bin/mock-gen"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "mgen": "node index.js"
+    "start": "node index.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
-    "testing",
-    "react",
-    "mockedprovider",
-    "mock",
-    "generator",
-    "graphql"
+    "mock-gen"
   ],
   "author": "csabat",
   "license": "ISC",
   "dependencies": {
-    "graphql": "^15.5.0"
-  }
+    "arg": "^5.0.0",
+    "esm": "^3.2.25",
+    "graphql": "^15.5.0",
+    "inquirer": "^7.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csabat/react-apollo-testing-mock-gen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/csabat/react-apollo-testing-mock-gen/issues"
+  },
+  "homepage": "https://github.com/csabat/react-apollo-testing-mock-gen"
 }

@@ -1,5 +1,5 @@
-const config = require('./config');
-const { capitalize } = require('./utils');
+const config = require('../config');
+const { capitalize } = require('../utils');
 
 const getMockTemplate = (name, variables, result, queryFileName) => `
 const queryDocument = require('../${queryFileName}');
