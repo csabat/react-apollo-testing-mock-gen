@@ -48,7 +48,9 @@ ex:
 		etc...
 		ScalarTypeDefinition: {
 			// here comes your scalar definitions
-			Date: () => '2020-02-02'
+			Date: {
+				defualt: () => '2020-02-02'
+			}
 		},
 	}
 
